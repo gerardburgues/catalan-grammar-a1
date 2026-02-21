@@ -321,7 +321,7 @@ const Dashboard = (function () {
         ? 'showVocab(\'' + suggested.id + '\')'
         : 'showLesson(\'' + suggested.id + '\')';
       heroHtml +=
-        '<h2 class="dash-hero-title">' + escapeHtml(suggested.title || suggested.id) + '</h2>' +
+        '<h2 class="dash-hero-title">' + escapeHtml(suggested.navLabelEn || (suggested.subtitle ? suggested.subtitle.split('—')[0].trim() : suggested.id)) + '</h2>' +
         '<p class="dash-hero-sub">' + (isVocab ? '📚 Vocabulary' : '📖 Grammar') + '</p>' +
         '<button class="btn-primary dash-hero-btn" onclick="' + onclickStr + '">' + actionLabel + '</button>';
     } else {
@@ -352,7 +352,7 @@ const Dashboard = (function () {
           '<div class="dash-mistake-item" onclick="' + onclickStr + '">' +
             '<span class="dash-mistake-icon">' + (isVocab ? '📚' : '📖') + '</span>' +
             '<div class="dash-mistake-info">' +
-              '<div class="dash-mistake-title">' + escapeHtml(item.section.title || item.section.id) + '</div>' +
+              '<div class="dash-mistake-title">' + escapeHtml(item.section.navLabelEn || (item.section.subtitle ? item.section.subtitle.split('—')[0].trim() : item.section.id)) + '</div>' +
               '<div class="dash-mistake-acc">' + accPct + '% accuracy &middot; ' + item.wrong + ' wrong</div>' +
             '</div>' +
             '<div class="dash-mistake-arrow">\u2192</div>' +
@@ -416,27 +416,15 @@ const Dashboard = (function () {
       '</div>';
 
     // ── Assemble layout ──
-    var dashEl = document.getElementById('dashboard');
-    if (!dashEl) {
-      console.warn('[Dashboard] #dashboard element not found');
+    var mainEl = document.getElementById('dash-main');
+    var rightEl = document.getElementById('dash-right-panel');
+    if (!mainEl) {
+      console.warn('[Dashboard] #dash-main element not found');
       return;
     }
 
-    dashEl.innerHTML =
-      '<div class="dash-layout">' +
-        '<div class="dash-main">' +
-          headerHtml +
-          statsHtml +
-          heroHtml +
-          reviewHtml +
-        '</div>' +
-        '<div class="dash-right-panel">' +
-          ringHtml +
-          chapBarsHtml +
-          weekHtml +
-          tipHtml +
-        '</div>' +
-      '</div>';
+    mainEl.innerHTML = headerHtml + statsHtml + heroHtml + reviewHtml;
+    if (rightEl) rightEl.innerHTML = ringHtml + chapBarsHtml + weekHtml + tipHtml;
 
     // Wire daily goal card
     var goalCard = document.getElementById('dash-daily-goal-card');

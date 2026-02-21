@@ -13,15 +13,17 @@ function escapeHtml(str) {
 }
 
 function showPage(id) {
-  var sections = document.querySelectorAll('.page-section, [data-page]');
+  var sections = document.querySelectorAll('.page-section');
   sections.forEach(function (sec) {
     sec.style.display = 'none';
-    sec.classList.remove('page-active');
+    sec.classList.remove('active');
   });
   var target = document.getElementById(id);
   if (target) {
-    target.style.display = '';
-    target.classList.add('page-active');
+    target.style.display = 'block';
+    target.classList.add('active');
+  } else {
+    console.warn('[showPage] No element with id:', id);
   }
 }
 
@@ -62,7 +64,7 @@ function showVocab(sectionId) {
     console.warn('[App] Vocab section not found:', sectionId);
     return;
   }
-  showPage('vocab-page');
+  showPage('vocabulary-page');
   setActiveNav(sectionId);
   if (typeof Analytics !== 'undefined') Analytics.trackLessonStarted(sectionId, 'vocabulary');
   var userData = typeof Dashboard !== 'undefined' ? Dashboard.getUserData() : {};
@@ -158,7 +160,7 @@ var App = (function () {
   // ─── Sidebar building ────────────────────────────────────────────────────
 
   function buildSidebar() {
-    var sidebar = document.getElementById('sidebar-nav');
+    var sidebar = document.getElementById('sb-chapters');
     if (!sidebar) return;
     if (typeof DATA === 'undefined' || !DATA.chapters) {
       sidebar.innerHTML = '<p class="sb-empty">No content loaded.</p>';
@@ -168,8 +170,8 @@ var App = (function () {
     var html = '';
     DATA.chapters.forEach(function (chapter, chIdx) {
       var chId = 'sb-ch-' + chIdx;
-      var titleEn = chapter.title || ('Chapter ' + (chIdx + 1));
-      var titleCa = chapter.titleCa || titleEn;
+      var titleEn = chapter.titleEn || chapter.title || ('Chapter ' + (chIdx + 1));
+      var titleCa = chapter.title || titleEn;
 
       html +=
         '<div class="sb-chapter-group" id="' + chId + '">' +
@@ -184,8 +186,8 @@ var App = (function () {
       (chapter.sections || []).forEach(function (sec) {
         var isVocab = sec.type === 'vocabulary';
         var icon = isVocab ? '📚' : '📖';
-        var labelEn = sec.title || sec.id;
-        var labelCa = sec.titleCa || labelEn;
+        var labelEn = sec.navLabelEn || (sec.subtitle ? sec.subtitle.split('—')[0].trim() : sec.id);
+        var labelCa = sec.navLabel || labelEn;
         var onclick = isVocab
           ? 'showVocab(\'' + sec.id + '\')'
           : 'showLesson(\'' + sec.id + '\')';
@@ -235,8 +237,8 @@ var App = (function () {
   // ─── Menu toggle (mobile) ────────────────────────────────────────────────
 
   function setupMenuToggle() {
-    var toggleBtn = document.getElementById('menu-toggle');
-    var sidebar = document.getElementById('sidebar');
+    var toggleBtn = document.getElementById('dash-burger-toggle');
+    var sidebar = document.getElementById('sb-sidebar');
     if (!toggleBtn || !sidebar) return;
 
     toggleBtn.addEventListener('click', function () {
@@ -291,11 +293,11 @@ var App = (function () {
     currentSectionId = section.id;
 
     var titleEl = document.getElementById('lesson-title');
-    var descEl = document.getElementById('lesson-description');
-    var exContainer = document.getElementById('lesson-exercises');
+    var descEl = document.getElementById('lesson-grammar-text');
+    var exContainer = document.getElementById('lesson-exercise-area');
 
-    if (titleEl) titleEl.textContent = section.title || section.id;
-    if (descEl) descEl.textContent = section.description || '';
+    if (titleEl) titleEl.textContent = section.subtitle || section.id;
+    if (descEl) descEl.textContent = section.explanation || '';
     if (!exContainer) return;
 
     exContainer.innerHTML = '';
@@ -316,12 +318,10 @@ var App = (function () {
   function renderVocab(section, userProgress) {
     currentSectionId = section.id;
 
-    var titleEl = document.getElementById('vocab-title');
-    var descEl = document.getElementById('vocab-description');
-    var container = document.getElementById('vocab-exercises');
+    var titleEl = document.getElementById('voc-title');
+    var container = document.getElementById('voc-exercise-area');
 
-    if (titleEl) titleEl.textContent = section.title || section.id;
-    if (descEl) descEl.textContent = section.description || '';
+    if (titleEl) titleEl.textContent = section.subtitle || section.id;
     if (!container) return;
 
     container.innerHTML = '';
@@ -517,7 +517,7 @@ var App = (function () {
       }
 
       case 'multichoice': {
-        html += '<div class="mc-question">' + escapeHtml(item.question || '') + '</div>';
+        html += '<div class="mc-question">' + escapeHtml(item.sentence || item.question || '') + '</div>';
         html += '<div class="mc-options">';
         (item.options || []).forEach(function (opt, i) {
           html += '<button class="mc-option" data-opt-idx="' + i + '">' + escapeHtml(opt) + '</button>';
@@ -650,11 +650,12 @@ var App = (function () {
         opts.forEach(function (btn) {
           btn.addEventListener('click', function () {
             var idx = parseInt(btn.getAttribute('data-opt-idx'), 10);
-            var correct = idx === item.correctIndex;
-            showFeedback(correct, item.options ? item.options[item.correctIndex] : '');
+            var correctIdx = item.answer !== undefined ? item.answer : item.correctIndex;
+            var correct = idx === correctIdx;
+            showFeedback(correct, item.options ? item.options[correctIdx] : '');
             opts.forEach(function (b) {
               b.disabled = true;
-              if (parseInt(b.getAttribute('data-opt-idx'), 10) === item.correctIndex) {
+              if (parseInt(b.getAttribute('data-opt-idx'), 10) === correctIdx) {
                 b.classList.add('correct');
               }
             });
@@ -818,7 +819,8 @@ var App = (function () {
 
         if (roCheckBtn) {
           roCheckBtn.addEventListener('click', function () {
-            var expected = (item.answer || item.words || []).join(' ');
+            var rawAnswer = item.answer || '';
+            var expected = Array.isArray(rawAnswer) ? rawAnswer.join(' ') : rawAnswer;
             var built = builtWords.join(' ');
             var correct = normalise(built) === normalise(expected);
             showFeedback(correct, expected);
@@ -870,7 +872,7 @@ var App = (function () {
         '</div>' +
         '<div class="section-complete-xp">+' + xp + ' XP</div>' +
         '<div class="section-complete-actions">' +
-          '<button class="btn-secondary" onclick="showPage(\'dashboard\')">Dashboard</button>' +
+          '<button class="btn-secondary" onclick="showPage(\'dashboard-page\')">Dashboard</button>' +
           '<button class="btn-primary" onclick="' +
             (sectionType === 'vocabulary' ? 'showVocab' : 'showLesson') +
             '(\'' + sectionId + '\')">Try Again</button>' +
@@ -885,7 +887,7 @@ var App = (function () {
         '<h2>Vocabulary Complete!</h2>' +
         '<p>You studied all the words in this set.</p>' +
         '<div class="section-complete-actions">' +
-          '<button class="btn-secondary" onclick="showPage(\'dashboard\')">Dashboard</button>' +
+          '<button class="btn-secondary" onclick="showPage(\'dashboard-page\')">Dashboard</button>' +
           '<button class="btn-primary" onclick="showVocab(\'' + section.id + '\')">Study Again</button>' +
         '</div>' +
       '</div>';
@@ -918,7 +920,7 @@ var App = (function () {
     var dashLink = document.querySelector('.nav-link[data-page-id="dashboard"], [data-action="dashboard"]');
     if (dashLink) {
       dashLink.addEventListener('click', function () {
-        showPage('dashboard');
+        showPage('dashboard-page');
         setActiveNav('dashboard');
         if (typeof Dashboard !== 'undefined') {
           Dashboard.render(Dashboard.getUserData());

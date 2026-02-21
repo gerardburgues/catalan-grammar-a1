@@ -89,7 +89,7 @@ const Auth = (function () {
 
   function signOut() {
     localStorage.removeItem(USER_KEY);
-    if (typeof showPage === 'function') showPage('landing');
+    if (typeof showPage === 'function') showPage('landing-page');
     if (typeof setActiveNav === 'function') setActiveNav('landing');
     // Hide sidebar / app shell if shown
     var sidebar = document.getElementById('sidebar');
@@ -123,7 +123,7 @@ const Auth = (function () {
       App.initApp();
     }
 
-    if (typeof showPage === 'function') showPage('dashboard');
+    if (typeof showPage === 'function') showPage('dashboard-page');
     if (typeof setActiveNav === 'function') setActiveNav('dashboard');
   }
 
@@ -258,6 +258,14 @@ const Auth = (function () {
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') hideAuthModal();
     });
+
+    // Demo button — skip auth, enter as guest
+    var demoBtn = document.getElementById('hero-demo-btn');
+    if (demoBtn) {
+      demoBtn.addEventListener('click', function () {
+        signIn('demo@parlaara.com', 'demo');
+      });
+    }
   }
 
   // ─── Init ─────────────────────────────────────────────────────────────────
@@ -277,7 +285,7 @@ const Auth = (function () {
       if (appShell) appShell.style.display = 'none';
       if (topnav) topnav.style.display = 'none';
 
-      if (typeof showPage === 'function') showPage('landing');
+      if (typeof showPage === 'function') showPage('landing-page');
     }
   }
 

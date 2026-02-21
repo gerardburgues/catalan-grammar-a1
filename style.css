@@ -154,6 +154,25 @@ img, svg {
   transform: translateY(-1px);
 }
 
+.btn-demo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1.4rem;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: rgba(232,232,232,0.55);
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: 1px dashed rgba(232,232,232,0.25);
+  transition: color 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+.btn-demo:hover {
+  color: var(--color-text);
+  border-color: rgba(232,232,232,0.5);
+}
+
 .btn-secondary:active {
   transform: translateY(0);
 }

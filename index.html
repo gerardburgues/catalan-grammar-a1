@@ -69,8 +69,8 @@
           <li><a href="#lp-footer">About</a></li>
         </ul>
         <div class="lp-nav-actions">
-          <button class="btn-secondary" id="nav-signin-btn">Sign In</button>
-          <button class="btn-primary" id="nav-trial-btn">Start Free Trial</button>
+          <button class="btn-secondary" id="nav-signin-btn" data-action="signin">Sign In</button>
+          <button class="btn-primary" id="nav-trial-btn" data-action="signup">Start Free Trial</button>
         </div>
         <button class="lp-burger" id="lp-burger" aria-label="Toggle menu" aria-expanded="false">
           <span></span><span></span><span></span>
@@ -88,8 +88,9 @@
         <h1 class="lp-hero-headline">Learn Catalan<br /><span class="lp-hero-highlight">the smart way</span></h1>
         <p class="lp-hero-sub">Master Catalan grammar and vocabulary through science-backed exercises. Built for English speakers who want to actually speak — not just memorise.</p>
         <div class="lp-hero-ctas">
-          <button class="btn-primary btn-lg" id="hero-trial-btn">Start Free Trial</button>
-          <button class="btn-secondary btn-lg" id="hero-signin-btn">Sign In</button>
+          <button class="btn-primary btn-lg" id="hero-trial-btn" data-action="signup">Start Free Trial</button>
+          <button class="btn-secondary btn-lg" id="hero-signin-btn" data-action="signin">Sign In</button>
+          <button class="btn-demo btn-lg" id="hero-demo-btn">Try Demo →</button>
         </div>
         <p class="lp-hero-note">3-day free trial &middot; No credit card required</p>
         <div class="lp-hero-stats">
@@ -122,10 +123,10 @@
             <p class="lp-mockup-question">Fill in the blank:</p>
             <p class="lp-mockup-sentence">Jo <span class="lp-mockup-blank">______</span> català.</p>
             <div class="lp-mockup-choices">
-              <button class="lp-mockup-choice">parlo</button>
-              <button class="lp-mockup-choice lp-mockup-choice--correct">parle</button>
+              <button class="lp-mockup-choice lp-mockup-choice--correct">parlo</button>
               <button class="lp-mockup-choice">parles</button>
               <button class="lp-mockup-choice">parla</button>
+              <button class="lp-mockup-choice">parlem</button>
             </div>
             <div class="lp-mockup-progress">
               <div class="lp-mockup-progress-bar" style="width: 60%"></div>
@@ -1136,15 +1137,7 @@
   </section>
 
 
-  <!-- ============================================================
-       FIREBASE SCRIPTS (stubbed — replace with real configs)
-  ============================================================ -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
-
-  <!-- App scripts -->
+  <!-- App scripts (Firebase CDN omitted — local stub mode) -->
   <script src="firebase-config.js"></script>
   <script src="data.js"></script>
   <script src="analytics.js"></script>
