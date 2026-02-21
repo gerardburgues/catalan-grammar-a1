@@ -3186,3 +3186,254 @@ img, svg {
 .sb-overlay.open {
   display: block;
 }
+
+
+/* =============================================================
+   EXERCISE ENGINE — generated class names
+============================================================= */
+
+/* Progress bar (top of exercise set) */
+.ex-progress-bar {
+  height: 6px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+.ex-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+  border-radius: 6px;
+  transition: width 0.4s ease;
+}
+.ex-counter {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  margin-bottom: 1.25rem;
+}
+
+/* Exercise card wrapper */
+.ex-card {
+  background: var(--color-dark2);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+}
+.ex-instruction {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--color-text-muted);
+  margin-bottom: 1.25rem;
+}
+.ex-hint {
+  font-size: 0.82rem;
+  color: var(--color-text-dim);
+  font-style: italic;
+  margin: 0.4rem 0 0.75rem;
+}
+
+/* Check button */
+.btn-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.75rem;
+  margin-top: 1rem;
+  border-radius: var(--radius);
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 0.92rem;
+  font-weight: 700;
+  transition: background var(--transition-speed), transform 0.15s;
+}
+.btn-check:hover:not(:disabled) {
+  background: #c42d3a;
+  transform: translateY(-1px);
+}
+.btn-check:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Feedback strip */
+.ex-feedback {
+  display: none;
+  margin-top: 0.9rem;
+  padding: 0.65rem 1rem;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.ex-feedback.correct-fb {
+  display: block;
+  background: rgba(46,204,113,0.1);
+  border: 1px solid var(--color-success);
+  color: var(--color-success);
+}
+.ex-feedback.wrong-fb {
+  display: block;
+  background: rgba(230,57,70,0.08);
+  border: 1px solid var(--color-primary);
+  color: #ff6b7a;
+}
+
+/* Multiple-choice options (mc-option, used by JS) */
+.mc-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+.mc-option {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  background: rgba(255,255,255,0.05);
+  border: 2px solid rgba(255,255,255,0.1);
+  color: var(--color-text);
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-align: left;
+  width: 100%;
+  transition: background var(--transition-speed), border-color var(--transition-speed);
+  cursor: pointer;
+}
+.mc-option:hover:not(:disabled) {
+  background: rgba(255,255,255,0.09);
+  border-color: rgba(255,255,255,0.25);
+}
+.mc-option.correct {
+  background: rgba(46,204,113,0.12);
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+.mc-option.wrong {
+  background: rgba(230,57,70,0.1);
+  border-color: var(--color-primary);
+  color: #ff6b7a;
+}
+.mc-option:disabled { cursor: not-allowed; }
+
+/* Reorder exercise (ro-*) */
+.ro-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-height: 48px;
+  padding: 0.75rem;
+  background: rgba(255,255,255,0.03);
+  border: 1.5px dashed rgba(255,255,255,0.12);
+  border-radius: var(--radius);
+  margin-bottom: 0.75rem;
+}
+.ro-built {
+  min-height: 48px;
+  padding: 0.75rem;
+  border: 2px solid rgba(255,255,255,0.12);
+  border-radius: var(--radius);
+  margin-bottom: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+.ro-token {
+  padding: 0.4rem 0.9rem;
+  border-radius: 20px;
+  background: var(--color-dark3);
+  border: 1.5px solid var(--color-border);
+  color: var(--color-text);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition-speed), border-color var(--transition-speed), transform 0.15s;
+}
+.ro-token:hover:not(:disabled) {
+  background: rgba(230,57,70,0.12);
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+}
+.ro-token:disabled { opacity: 0.45; cursor: not-allowed; }
+.ro-built-token {
+  padding: 0.35rem 0.8rem;
+  border-radius: 20px;
+  background: rgba(230,57,70,0.15);
+  border: 1.5px solid rgba(230,57,70,0.4);
+  color: var(--color-text);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.ro-built-token:hover { background: rgba(230,57,70,0.28); }
+
+/* Sorting exercise */
+.sort-categories {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.sort-category {
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius);
+  padding: 0.75rem;
+}
+.sort-cat-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--color-secondary);
+  margin-bottom: 0.5rem;
+}
+.sort-cat-drop {
+  min-height: 40px;
+  border: 1.5px dashed rgba(255,255,255,0.1);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.sort-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.sort-item {
+  padding: 0.4rem 0.85rem;
+  border-radius: 20px;
+  background: var(--color-dark3);
+  border: 1.5px solid var(--color-border);
+  color: var(--color-text);
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+.sort-item.selected {
+  border-color: var(--color-secondary);
+  background: rgba(244,208,63,0.1);
+}
+
+/* Transformation exercise */
+.tf-prompt {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+}
+.tf-instruction {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-bottom: 0.75rem;
+}
+.tf-input { /* inherits .fb-input */ }
+
+/* Match exercise */
+.match-prompt {
+  font-size: 1.05rem;
+  color: var(--color-text);
+  margin-bottom: 0.75rem;
+}
