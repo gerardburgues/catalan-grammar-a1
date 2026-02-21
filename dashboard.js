@@ -230,19 +230,29 @@ const Dashboard = (function () {
   // ─── SVG Progress Ring ────────────────────────────────────────────────────
 
   function buildProgressRing(pct) {
-    var radius = 54;
+    var radius = 50;
     var circ = 2 * Math.PI * radius;
     var offset = circ - (pct / 100) * circ;
     return (
-      '<svg class="dash-progress-ring" viewBox="0 0 120 120" width="120" height="120">' +
-        '<circle cx="60" cy="60" r="' + radius + '" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="10"/>' +
-        '<circle cx="60" cy="60" r="' + radius + '" fill="none" stroke="#E63946" stroke-width="10"' +
-          ' stroke-dasharray="' + circ.toFixed(2) + '"' +
-          ' stroke-dashoffset="' + offset.toFixed(2) + '"' +
-          ' stroke-linecap="round"' +
-          ' transform="rotate(-90 60 60)"/>' +
-        '<text x="60" y="65" text-anchor="middle" fill="#fff" font-size="22" font-weight="700">' + pct + '%</text>' +
-      '</svg>'
+      '<div class="dash-ring-wrap">' +
+        '<svg class="dash-progress-ring" viewBox="0 0 120 120">' +
+          '<defs>' +
+            '<linearGradient id="ringGrad2" x1="0%" y1="0%" x2="100%" y2="100%">' +
+              '<stop offset="0%" stop-color="#E63946"/>' +
+              '<stop offset="100%" stop-color="#F4D03F"/>' +
+            '</linearGradient>' +
+          '</defs>' +
+          '<circle class="dash-ring-bg" cx="60" cy="60" r="' + radius + '"/>' +
+          '<circle class="dash-ring-fill" cx="60" cy="60" r="' + radius + '"' +
+            ' stroke="url(#ringGrad2)"' +
+            ' stroke-dasharray="' + circ.toFixed(2) + '"' +
+            ' stroke-dashoffset="' + offset.toFixed(2) + '"/>' +
+        '</svg>' +
+        '<div class="dash-ring-center">' +
+          '<span class="dash-ring-pct">' + pct + '%</span>' +
+          '<span class="dash-ring-label">complete</span>' +
+        '</div>' +
+      '</div>'
     );
   }
 
@@ -275,14 +285,15 @@ const Dashboard = (function () {
     // ── Header ──
     var headerHtml =
       '<div class="dash-header">' +
-        '<div class="dash-greeting">' +
-          '<h1>' + escapeHtml(greeting) + '</h1>' +
-          '<p class="dash-subtitle">' + t.subtitle + '</p>' +
+        '<div>' +
+          '<div class="dash-greeting-text">' + escapeHtml(greeting) + '</div>' +
+          '<div class="dash-greeting-sub">' + t.subtitle + '</div>' +
         '</div>' +
-        '<div class="dash-streak-pill">' +
-          '<span class="streak-fire">🔥</span>' +
-          '<span class="streak-count">' + streak + '</span>' +
-          '<span class="streak-label">&nbsp;' + (streak === 1 ? t.streakDay : t.streakDays) + '</span>' +
+        '<div class="dash-header-right">' +
+          '<div class="dash-streak-pill">' +
+            '<span class="dash-streak-flame">🔥</span>' +
+            '<span>' + streak + ' ' + (streak === 1 ? t.streakDay : t.streakDays) + '</span>' +
+          '</div>' +
         '</div>' +
       '</div>';
 
@@ -310,8 +321,7 @@ const Dashboard = (function () {
       '</div>';
 
     // ── Hero: Continue Learning ──
-    var heroHtml = '<div class="dash-hero-card">' +
-      '<div class="dash-hero-label">' + t.heroLabel + '</div>';
+    var heroHtml = '<div class="dash-continue-card">';
     if (suggested) {
       var isVocab = suggested.type === 'vocabulary';
       var scores = userData.scores || {};
@@ -321,13 +331,20 @@ const Dashboard = (function () {
         ? 'showVocab(\'' + suggested.id + '\')'
         : 'showLesson(\'' + suggested.id + '\')';
       heroHtml +=
-        '<h2 class="dash-hero-title">' + escapeHtml(suggested.navLabelEn || (suggested.subtitle ? suggested.subtitle.split('—')[0].trim() : suggested.id)) + '</h2>' +
-        '<p class="dash-hero-sub">' + (isVocab ? '📚 Vocabulary' : '📖 Grammar') + '</p>' +
-        '<button class="btn-primary dash-hero-btn" onclick="' + onclickStr + '">' + actionLabel + '</button>';
+        '<div class="dash-continue-body">' +
+          '<div class="dash-continue-label">' + t.heroLabel + '</div>' +
+          '<div class="dash-continue-title">' + escapeHtml(suggested.navLabelEn || (suggested.subtitle ? suggested.subtitle.split('—')[0].trim() : suggested.id)) + '</div>' +
+          '<div class="dash-continue-sub">' + (isVocab ? '📚 Vocabulary' : '📖 Grammar') + '</div>' +
+        '</div>' +
+        '<div class="dash-continue-action">' +
+          '<button class="btn-primary dash-continue-btn" onclick="' + onclickStr + '">' + actionLabel + '</button>' +
+        '</div>';
     } else {
       heroHtml +=
-        '<p class="dash-hero-empty">' + t.noSuggestion + '</p>' +
-        '<button class="btn-secondary" onclick="showPage(\'lessons\')">' + t.browseLessons + '</button>';
+        '<div class="dash-continue-body">' +
+          '<div class="dash-continue-label">' + t.heroLabel + '</div>' +
+          '<p class="dash-continue-sub">' + t.noSuggestion + '</p>' +
+        '</div>';
     }
     heroHtml += '</div>';
 
@@ -336,12 +353,14 @@ const Dashboard = (function () {
       '<h3 class="dash-section-title">' + t.reviewTitle + '</h3>';
     if (topMistakes.length === 0) {
       reviewHtml +=
-        '<div class="dash-all-clear">' +
-          '<div class="dash-all-clear-icon">✅</div>' +
-          '<div><strong>' + t.allClear + '</strong><br><span>' + t.allClearSub + '</span></div>' +
+        '<div style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;background:var(--color-dark2);border:1px solid var(--color-border-light);border-radius:var(--radius)">' +
+          '<span style="font-size:1.5rem">✅</span>' +
+          '<div><strong>' + t.allClear + '</strong><br>' +
+            '<span style="font-size:0.85rem;color:var(--color-text-muted)">' + t.allClearSub + '</span>' +
+          '</div>' +
         '</div>';
     } else {
-      reviewHtml += '<div class="dash-mistake-list">';
+      reviewHtml += '<div class="dash-review-cards">';
       topMistakes.forEach(function (item) {
         var isVocab = item.section.type === 'vocabulary';
         var onclickStr = isVocab
@@ -349,13 +368,13 @@ const Dashboard = (function () {
           : 'showLesson(\'' + item.section.id + '\')';
         var accPct = Math.round(item.accuracy * 100);
         reviewHtml +=
-          '<div class="dash-mistake-item" onclick="' + onclickStr + '">' +
-            '<span class="dash-mistake-icon">' + (isVocab ? '📚' : '📖') + '</span>' +
-            '<div class="dash-mistake-info">' +
-              '<div class="dash-mistake-title">' + escapeHtml(item.section.navLabelEn || (item.section.subtitle ? item.section.subtitle.split('—')[0].trim() : item.section.id)) + '</div>' +
-              '<div class="dash-mistake-acc">' + accPct + '% accuracy &middot; ' + item.wrong + ' wrong</div>' +
+          '<div class="dash-mistake-card" style="cursor:pointer" onclick="' + onclickStr + '">' +
+            '<div class="dash-mistake-icon">' + (isVocab ? '📚' : '📖') + '</div>' +
+            '<div class="dash-mistake-body">' +
+              '<h4>' + escapeHtml(item.section.navLabelEn || (item.section.subtitle ? item.section.subtitle.split('—')[0].trim() : item.section.id)) + '</h4>' +
+              '<p>' + accPct + '% accuracy &middot; ' + item.wrong + ' wrong</p>' +
             '</div>' +
-            '<div class="dash-mistake-arrow">\u2192</div>' +
+            '<button class="btn-secondary dash-mistake-btn" onclick="event.stopPropagation();' + onclickStr + '">Practice</button>' +
           '</div>';
       });
       reviewHtml += '</div>';
@@ -363,56 +382,68 @@ const Dashboard = (function () {
     reviewHtml += '</div>';
 
     // ── Right panel ──
-    // Progress ring
+    // Progress ring card
     var ringHtml =
-      '<div class="dash-panel-card">' +
-        '<div class="dash-panel-card-title">' + t.progressTitle + '</div>' +
-        '<div class="dash-progress-ring-wrap">' + buildProgressRing(progressPct) + '</div>' +
-        '<div class="dash-progress-sub">' + progress.started + ' of ' + progress.total + ' sections</div>' +
+      '<div class="dash-progress-ring-card">' +
+        '<h3 class="dash-section-title">' + t.progressTitle + '</h3>' +
+        buildProgressRing(progressPct) +
+        '<p style="text-align:center;font-size:0.78rem;color:var(--color-text-muted);margin-top:0.5rem">' +
+          progress.started + ' of ' + progress.total + ' sections' +
+        '</p>' +
       '</div>';
 
     // Chapter bars
-    var chapBarsHtml = '<div class="dash-panel-card">' +
-      '<div class="dash-panel-card-title">' + t.chapterTitle + '</div>' +
-      '<div class="dash-chapter-bars">';
+    var chapBarsHtml = '<div class="dash-chapter-progress-card">' +
+      '<h3 class="dash-section-title">' + t.chapterTitle + '</h3>' +
+      '<div class="dash-chapter-list">';
     chapterProgress.forEach(function (ch) {
       chapBarsHtml +=
-        '<div class="dash-chap-row">' +
-          '<div class="dash-chap-title">' + escapeHtml(ch.title) + '</div>' +
-          '<div class="dash-chap-bar-wrap">' +
-            '<div class="dash-chap-bar-fill" style="width:' + ch.pct + '%"></div>' +
+        '<div class="dash-chapter-item">' +
+          '<div class="dash-chapter-info">' +
+            '<span class="dash-chapter-name">' + escapeHtml(ch.title) + '</span>' +
+            '<span class="dash-chapter-pct">' + ch.pct + '%</span>' +
           '</div>' +
-          '<div class="dash-chap-pct">' + ch.pct + '%</div>' +
+          '<div class="dash-chapter-bar-wrap">' +
+            '<div class="dash-chapter-bar" style="width:' + ch.pct + '%"></div>' +
+          '</div>' +
         '</div>';
     });
     if (chapterProgress.length === 0) {
-      chapBarsHtml += '<p class="dash-empty-state">Start a lesson to see progress here.</p>';
+      chapBarsHtml += '<p style="font-size:0.82rem;color:var(--color-text-muted)">Start a lesson to see progress here.</p>';
     }
     chapBarsHtml += '</div></div>';
 
     // Weekly activity bars
     var dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
     var maxActivity = Math.max.apply(null, weeklyActivity.concat([1]));
-    var weekHtml = '<div class="dash-panel-card">' +
-      '<div class="dash-panel-card-title">' + t.weeklyTitle + '</div>' +
-      '<div class="dash-weekly-bars">';
+    var todayDow = (new Date().getDay() + 6) % 7; // 0=Mon
+    var weekHtml = '<div class="dash-activity">' +
+      '<h3 class="dash-section-title">' + t.weeklyTitle + '</h3>' +
+      '<div class="dash-activity-bars">';
     weeklyActivity.forEach(function (count, i) {
-      var heightPct = Math.round((count / maxActivity) * 100);
+      var heightPct = count > 0 ? Math.max(Math.round((count / maxActivity) * 100), 4) : 0;
+      var isToday = i === todayDow;
       weekHtml +=
-        '<div class="dash-week-col">' +
-          '<div class="dash-week-bar-wrap">' +
-            '<div class="dash-week-bar-fill" style="height:' + heightPct + '%"></div>' +
+        '<div class="dash-activity-day">' +
+          '<div class="dash-activity-bar-wrap">' +
+            '<div class="dash-activity-bar' +
+              (count === 0 ? ' dash-activity-bar--empty' : '') +
+              (isToday ? ' dash-activity-bar--today' : '') + '"' +
+              ' style="height:' + heightPct + '%"></div>' +
           '</div>' +
-          '<div class="dash-week-label">' + dayLabels[i] + '</div>' +
+          '<span' + (isToday ? ' class="dash-activity-today"' : '') + '>' + dayLabels[i] + '</span>' +
         '</div>';
     });
     weekHtml += '</div></div>';
 
     // Tip card
     var tipHtml =
-      '<div class="dash-panel-card dash-tip-card">' +
-        '<div class="dash-panel-card-title">' + t.tipTitle + '</div>' +
-        '<p class="dash-tip-text">' + escapeHtml(getDailyTip()) + '</p>' +
+      '<div class="dash-tip-card">' +
+        '<div class="dash-tip-icon">💡</div>' +
+        '<div class="dash-tip-body">' +
+          '<div class="dash-tip-title">Tip of the Day</div>' +
+          '<p class="dash-tip-text">' + escapeHtml(getDailyTip()) + '</p>' +
+        '</div>' +
       '</div>';
 
     // ── Assemble layout ──

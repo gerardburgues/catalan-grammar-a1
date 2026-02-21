@@ -71,6 +71,17 @@ function showVocab(sectionId) {
   App.renderVocab(section, userData);
 }
 
+function _findFirstSectionOfType(type) {
+  if (typeof DATA === 'undefined' || !DATA.chapters) return null;
+  for (var ci = 0; ci < DATA.chapters.length; ci++) {
+    var secs = DATA.chapters[ci].sections || [];
+    for (var si = 0; si < secs.length; si++) {
+      if (secs[si].type === type) return secs[si];
+    }
+  }
+  return null;
+}
+
 function _findSection(sectionId) {
   if (typeof DATA === 'undefined' || !DATA.chapters) return null;
   var found = null;
@@ -916,29 +927,50 @@ var App = (function () {
       });
     });
 
-    // Wire dashboard nav link
-    var dashLink = document.querySelector('.nav-link[data-page-id="dashboard"], [data-action="dashboard"]');
-    if (dashLink) {
-      dashLink.addEventListener('click', function () {
-        showPage('dashboard-page');
-        setActiveNav('dashboard');
-        if (typeof Dashboard !== 'undefined') {
-          Dashboard.render(Dashboard.getUserData());
-        }
-      });
-    }
+    // Wire all sidebar nav links via data-page attribute
+    document.querySelectorAll('.sb-nav-link[data-page]').forEach(function (link) {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        var page = link.getAttribute('data-page');
 
-    // Wire review nav link
-    var reviewLink = document.querySelector('.nav-link[data-page-id="review-page"], [data-action="review"]');
-    if (reviewLink) {
-      reviewLink.addEventListener('click', function () {
-        showPage('review-page');
-        setActiveNav('review-page');
-        if (typeof SpacedRepetition !== 'undefined') {
-          SpacedRepetition.renderReviewPage();
+        // Update active state
+        document.querySelectorAll('.sb-nav-link').forEach(function (l) { l.classList.remove('sb-nav-link--active'); });
+        link.classList.add('sb-nav-link--active');
+
+        if (page === 'dashboard') {
+          showPage('dashboard-page');
+          if (typeof Dashboard !== 'undefined') Dashboard.render(Dashboard.getUserData());
+        } else if (page === 'lessons') {
+          // Grammar: stay on dashboard, expand sidebar
+          showPage('dashboard-page');
+          if (typeof Dashboard !== 'undefined') Dashboard.render(Dashboard.getUserData());
+          var sb = document.getElementById('sb-chapters');
+          if (sb) sb.scrollIntoView({ behavior: 'smooth' });
+        } else if (page === 'vocabulary-page') {
+          // Vocabulary: open first vocab section
+          var firstVocab = _findFirstSectionOfType('vocabulary');
+          if (firstVocab) showVocab(firstVocab.id);
+        } else if (page === 'review-page') {
+          showPage('review-page');
+          if (typeof SpacedRepetition !== 'undefined') SpacedRepetition.renderReviewPage();
+        } else if (page === 'study-plan-page') {
+          showPage('study-plan-page');
+        } else if (page === 'progress-page') {
+          showPage('progress-page');
         }
       });
-    }
+    });
+
+    // Back buttons
+    document.querySelectorAll('.btn-back').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        showPage('dashboard-page');
+        document.querySelectorAll('.sb-nav-link').forEach(function (l) { l.classList.remove('sb-nav-link--active'); });
+        var dashLink = document.querySelector('.sb-nav-link[data-page="dashboard"]');
+        if (dashLink) dashLink.classList.add('sb-nav-link--active');
+        if (typeof Dashboard !== 'undefined') Dashboard.render(Dashboard.getUserData());
+      });
+    });
 
     // Wire sign-out
     var signOutBtns = document.querySelectorAll('[data-action="signout"], .signout-btn, #btn-signout');
